@@ -263,6 +263,7 @@ def render_ui():
     user_query = ""
     job_desc = ""
     rank_criteria = ""
+    rank_mode = "overall"
     start_clicked = False
 
     with st.container(border=True):
@@ -286,18 +287,29 @@ def render_ui():
                 )
             with col_b:
                 rank_criteria = st.text_input(
-                    "Rank Based On",
+                    "Ranking Criteria / What matters most?",
                     placeholder="e.g., Specific skills, leadership experience, project scale..."
                 )
                 must_have_skills = st.text_input(
                     "Must-Have Skills / Keywords",
                     placeholder="e.g., Python, Vector Databases, LangChain..."
                 )
-            
+                rank_mode_choice = st.selectbox(
+                    "Ranking Priority",
+                    ["Best overall fit", "Most senior", "Strongest skills match"],
+                    index=0
+                )
+                rank_mode_map = {
+                    "Best overall fit": "overall",
+                    "Most senior": "seniority",
+                    "Strongest skills match": "skills"
+                }
+                rank_mode = rank_mode_map[rank_mode_choice]
+
             if st.button("Start Ranking"):
                 start_clicked = True
 
-    return app_mode, uploaded_files, user_query, job_desc, rank_criteria, start_clicked
+    return app_mode, uploaded_files, user_query, job_desc, rank_criteria, rank_mode, start_clicked
 
 
 
@@ -331,6 +343,14 @@ def render_ranking_cards(rankings_list):
                 
             with col_info:
                 st.markdown(f"**Candidate:** {real_name}")
+                score_breakdown = candidate.get("score_breakdown")
+                if score_breakdown:
+                    st.markdown(
+                        f"**Score:** {score_breakdown.get('overall', 0)}/100 | "
+                        f"Skills {score_breakdown.get('skills', 0)}, "
+                        f"Experience {score_breakdown.get('experience', 0)}, "
+                        f"Leadership {score_breakdown.get('leadership', 0)}"
+                    )
                 st.markdown(f"**Evaluation:** {summary}")
                 
             with col_action:

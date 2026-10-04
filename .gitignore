@@ -1,6 +1,15 @@
-__pycache__/
-.env
-.venv/
+# Virtual environment
+venv/
+env/
 
+# API keys & environment secrets
+.env
+
+# Chroma & local databases
 chroma_db/
 chroma_db_test/
+
+# Python & test cache
+__pycache__/
+.pytest_cache/
+*.pyc
